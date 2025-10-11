@@ -17,12 +17,15 @@ class GeneticSolver(Solver):
         # Crossover probability
         self.crossover_p = crossover_p
         # Current population
-        self.population: np.array[int] = np.zeros(self.pop_size)
+        self.population: np.array[int] = np.zeros((self.pop_size, 400))
 
     def get_parameters(self) -> Dict[str, Any]:
-        param_dict = dict(
-            {"population size": self.pop_size},
-            {"mutation probability": self.mutation_p},
-            {"crossover probabiity": self.crossover_p},
-        )
+        param_dict = {
+            "population size": self.pop_size,
+            "mutation probability": self.mutation_p,
+            "crossover probabiity": self.crossover_p
+        }
         return param_dict
+
+    def solve(self, problem, x0, *args, **kwargs):
+        return super().solve(problem, x0, *args, **kwargs)
