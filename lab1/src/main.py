@@ -13,3 +13,5 @@ if __name__ == '__main__':
     test_value = test_solver.evaluate(calc_target, test_selection)
     print(test_solver.find_best(test_value, test_selection))
     print("\n")
+    test_next_gen = test_solver.crossover_and_mutation(test_selection)
+    print("\n")
