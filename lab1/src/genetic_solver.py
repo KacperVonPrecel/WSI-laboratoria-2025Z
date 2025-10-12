@@ -10,7 +10,7 @@ class GeneticSolver(Solver):
     """A genetic solver with mutation, proportional reproduction,
     one-point crossover and generation succession"""
 
-    def __init__(self, mutation_p: float = 0.05, crossover_p: float = 0.7, time_budget: int = 50000):
+    def __init__(self, mutation_p: float = 0.05, crossover_p: float = 0.85, time_budget: int = 50000):
         super().__init__()
         # Mutation probability
         self.mutation_p = mutation_p
