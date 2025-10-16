@@ -31,8 +31,16 @@ class GeneticSolver(Solver):
         values = np.zeros(len(population))
         pos = 0
         for i in population:
+            # ones_num = 0
+            # penalty = 0
+            # for bit in i:
+            #     if bit == 1:
+            #         ones_num += 1
+            # if ones_num > 300:
+            #     penalty = -(ones_num - 300)**2
             values[pos] = func(i)
             pos += 1
+
         return values
 
     def find_best(self, values: np.ndarray[float], population: np.ndarray[int]) -> Tuple[np.ndarray, float]:
