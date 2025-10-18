@@ -46,5 +46,10 @@ if __name__ == '__main__':
     else:
         test_population = gen_sol.create_first_population(pop_size)
         best_specimen, best_value, values_history = test_solver.solve(calc_target, test_population)
-        print(f"Best specimen: {best_specimen} \n Best value: {best_value} \n Ranom record: {values_history[2]}")
+        print(f"Best specimen: {best_specimen} \n Best value: {best_value} \n Random record: {values_history[2]}")
+        count = 0
+        for element in best_specimen:
+            if element == 1:
+                count += 1
+        print(f"Ones count: {count}")
         print("Oh. Okay.")

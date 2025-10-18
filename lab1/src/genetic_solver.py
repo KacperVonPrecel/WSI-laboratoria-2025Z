@@ -40,6 +40,7 @@ class GeneticSolver(Solver):
         values = np.zeros(len(population))
         pos = 0
         for i in population:
+            #           Soft limitations:
             # ones_num = 0
             # penalty = 0
             # for bit in i:
@@ -47,6 +48,7 @@ class GeneticSolver(Solver):
             #         ones_num += 1
             # if ones_num > 300:
             #     penalty = -(ones_num - 300)**2
+            # values[pos] = func(i) + penalty
             values[pos] = func(i)
             pos += 1
 
@@ -89,7 +91,9 @@ class GeneticSolver(Solver):
             second_parent = matched_parents[pos + 1]
             if np.random.choice([0, 1], p=[1 - self.crossover_p, self.crossover_p]) == 1:
                 crossover_point = np.random.randint(1, 399)
-                tmp_slice = first_parent[crossover_point:]
+                while not check_slices(first_parent, second_parent, crossover_point):
+                    crossover_point = np.random.randint(1, 399)
+                tmp_slice = first_parent[crossover_point:].copy()
                 first_parent[crossover_point:] = second_parent[crossover_point:]
                 second_parent[crossover_point:] = tmp_slice
             tmp_list_of_children.append(first_parent)
@@ -102,9 +106,19 @@ class GeneticSolver(Solver):
         # MUTATION
         new_generation = np.array(tmp_list_of_children)
         for offspring in new_generation:
+            ones_count = 0
+            for cell in offspring:
+                if cell == 1:
+                    ones_count += 1
             for cell in offspring:
                 if np.random.choice([0, 1], p=[1 - self.mutation_p, self.mutation_p]) == 1:
-                    cell = 1 if cell == 0 else 0
+                    # cell = 1 if cell == 0 else 0
+                    if cell == 1:
+                        cell = 0
+                        ones_count -= 1
+                    elif ones_count < 300:
+                        cell = 1
+                        ones_count += 1
 
         return new_generation
 
@@ -133,8 +147,31 @@ class GeneticSolver(Solver):
 def create_first_population(pop_size: int = 50) -> np.ndarray[int]:
     first_population = np.zeros((pop_size, INPUTS_NUM))
     for specimen in first_population:
+        ones_count = 0
         t = 0
         while t < len(specimen):
-            specimen[t] = np.random.randint(2)
+            if ones_count == 300:
+                specimen[t] = 0
+            else:
+                specimen[t] = np.random.randint(2)
+                if specimen[t] == 1:
+                    ones_count += 1
             t += 1
     return first_population
+
+
+def check_slices(first_parent: np.ndarray[int], second_parent: np.ndarray[int], crossover_point: int) -> bool:
+    tmp_slice = first_parent[crossover_point:].copy()
+    first_parent[crossover_point:] = second_parent[crossover_point:]
+    second_parent[crossover_point:] = tmp_slice
+
+    ones_count_first_parent = 0
+    ones_count_second_parent = 0
+
+    for i in range(len(first_parent)):
+        if first_parent[i] == 1:
+            ones_count_first_parent += 1
+        if second_parent[i] == 1:
+            ones_count_second_parent += 1
+
+    return ones_count_first_parent <= 300 and ones_count_second_parent <= 300
