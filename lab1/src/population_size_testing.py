@@ -9,7 +9,7 @@ def population_testing(solver: gen_sol.GeneticSolver, pop_size_values: np.array[
         for pop_size in pop_size_values:
             test_population = gen_sol.create_first_population(pop_size)
             for _ in range(20):
-                _, best_value = solver.solve(calc_target, test_population)
+                _, best_value, _ = solver.solve(calc_target, test_population)
                 print(f"Best value: {best_value}")
                 file_handler.write(f"{str(best_value)} ")
         for pop_size in pop_size_values:

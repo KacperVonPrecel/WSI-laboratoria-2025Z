@@ -108,15 +108,18 @@ class GeneticSolver(Solver):
 
         return new_generation
 
-    def solve(self, func: Callable[[np.ndarray], int], first_population: np.ndarray[int]) -> Tuple[np.ndarray, float]:
+    def solve(self, func: Callable[[np.ndarray], int], first_population: np.ndarray[int]) -> Tuple[np.ndarray, float, np.ndarray[float]]:
         time = 0
-        values = self.evaluate(func, first_population)
-        best_sepcimen, best_value = self.find_best(values, first_population)
         time_max = self.time_budget // len(first_population)
+        values_history = np.zeros(((1 + time_max), len(first_population)))
+        values = self.evaluate(func, first_population)
+        values_history[0] = values
+        best_sepcimen, best_value = self.find_best(values, first_population)
         while time < time_max:
             selected_population = self.selection(values, first_population)
             next_generation = self.crossover_and_mutation(selected_population)
             values = self.evaluate(func, next_generation)
+            values_history[time + 1] = values
             current_specimen, current_value = self.find_best(values, next_generation)
             if current_value > best_value:
                 best_sepcimen = current_specimen
@@ -124,7 +127,7 @@ class GeneticSolver(Solver):
             first_population = next_generation
             time += 1
 
-        return best_sepcimen, best_value
+        return best_sepcimen, best_value, values_history
 
 
 def create_first_population(pop_size: int = 50) -> np.ndarray[int]:

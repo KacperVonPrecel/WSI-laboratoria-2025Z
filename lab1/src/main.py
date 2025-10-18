@@ -7,7 +7,7 @@ def checking_loop(solver: gen_sol.GeneticSolver, pop_size: int, file_name: str) 
     test_population = gen_sol.create_first_population(pop_size)
     with open(file_name, "w") as file_handler:
         for _ in range(20):
-            _, best_value = solver.solve(calc_target, test_population)
+            _, best_value, _ = solver.solve(calc_target, test_population)
             print(f"Best value: {best_value}")
             file_handler.write(f"{str(best_value)} ")
     return "Done"
@@ -45,6 +45,6 @@ if __name__ == '__main__':
         print(calc_median_and_deviation(file_name))
     else:
         test_population = gen_sol.create_first_population(pop_size)
-        best_specimen, best_value = test_solver.solve(calc_target, test_population)
-        print(f"Best specimen: {best_specimen} \n Best value: {best_value}")
+        best_specimen, best_value, values_history = test_solver.solve(calc_target, test_population)
+        print(f"Best specimen: {best_specimen} \n Best value: {best_value} \n Ranom record: {values_history[2]}")
         print("Oh. Okay.")
