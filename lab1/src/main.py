@@ -6,17 +6,17 @@ import numpy as np
 def checking_loop(solver: gen_sol.GeneticSolver, pop_size: int, file_name: str) -> str:
     test_population = gen_sol.create_first_population(pop_size)
     with open(file_name, "w") as file_handler:
-        for _ in range(10):
+        for _ in range(20):
             _, best_value = solver.solve(calc_target, test_population)
             print(f"Best value: {best_value}")
-            file_handler.write(f"{str(best_value)} \n")
+            file_handler.write(f"{str(best_value)} ")
     return "Done"
 
 
 def calc_median_and_deviation(file: str) -> tuple[float, float]:
     with open(file, "r") as fh:
         for line in fh:
-            values_table = line.strip()
+            values_table = line.strip().split()
         values_array = np.array(values_table, dtype=np.float64)
     median = np.mean(values_array)
     deviation = np.std(values_array, dtype=np.float64)

@@ -27,6 +27,15 @@ class GeneticSolver(Solver):
         }
         return param_dict
 
+    def set_mutation_p(self, new_prob: float):
+        self.mutation_p = new_prob
+
+    def set_crossover_p(self, new_prob: float):
+        self.crossover_p = new_prob
+
+    def set_time_budget(self, new_FES: int):
+        self.time_budget = new_FES
+
     def evaluate(self, func: Callable[[np.ndarray], float], population: np.ndarray[int]) -> np.ndarray[float]:
         values = np.zeros(len(population))
         pos = 0
