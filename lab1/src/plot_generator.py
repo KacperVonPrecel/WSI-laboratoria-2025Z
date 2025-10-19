@@ -20,9 +20,9 @@ def box_plot_generation(file_handle, tested_parameter: str, plots_title: str):
         patch.set_facecolor("#173CB6")
 
     for median in bp['medians']:
-        median.set(color= "#E60606", linewidth = 4)
+        median.set(color="#E60606", linewidth = 4)
 
-    plt.title(plots_title, fontweight='bold', fontsize=32)
+    plt.title(plots_title, fontweight='bold', fontsize=26)
     plt.savefig(plots_title)
     plt.show()
 
