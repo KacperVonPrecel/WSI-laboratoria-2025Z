@@ -4,7 +4,7 @@ import numpy as np
 
 
 def population_testing(solver: gen_sol.GeneticSolver, pop_size_values: np.array[int], file_name: str) -> str:
-    np.random.seed(1234)
+    # np.random.seed(1234)
     with open(file_name, "w") as file_handler:
         for pop_size in pop_size_values:
             test_population = gen_sol.create_first_population(pop_size)

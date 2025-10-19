@@ -106,18 +106,14 @@ class GeneticSolver(Solver):
         # MUTATION
         new_generation = np.array(tmp_list_of_children)
         for offspring in new_generation:
-            ones_count = 0
-            for cell in offspring:
-                if cell == 1:
-                    ones_count += 1
-            for cell in offspring:
-                if np.random.choice([0, 1], p=[1 - self.mutation_p, self.mutation_p]) == 1:
-                    # cell = 1 if cell == 0 else 0
-                    if cell == 1:
-                        cell = 0
+            ones_count = int(np.sum(offspring))
+            for i in range(len(offspring)):
+                if np.random.random() < self.mutation_p:
+                    if offspring[i] == 1:
+                        offspring[i] = 0
                         ones_count -= 1
                     elif ones_count < 300:
-                        cell = 1
+                        offspring[i] = 1
                         ones_count += 1
 
         return new_generation
@@ -165,13 +161,7 @@ def check_slices(first_parent: np.ndarray[int], second_parent: np.ndarray[int], 
     first_parent[crossover_point:] = second_parent[crossover_point:]
     second_parent[crossover_point:] = tmp_slice
 
-    ones_count_first_parent = 0
-    ones_count_second_parent = 0
-
-    for i in range(len(first_parent)):
-        if first_parent[i] == 1:
-            ones_count_first_parent += 1
-        if second_parent[i] == 1:
-            ones_count_second_parent += 1
+    ones_count_first_parent = int(np.sum(first_parent))
+    ones_count_second_parent = int(np.sum(second_parent))
 
     return ones_count_first_parent <= 300 and ones_count_second_parent <= 300
