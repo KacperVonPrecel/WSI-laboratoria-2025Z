@@ -15,6 +15,7 @@ def parameter_testing(solver: gen_sol.GeneticSolver, pop_size: int, file_name: s
             for _ in range(20):
                 _, best_value, _ = solver.solve(calc_target, test_population)
                 file_handler.write(f"{str(best_value)} ")
+            file_handler.write("\n")
         for parameter_value in values_to_test:
             file_handler.write(f'{str(parameter_value)} ')
     return "Done"
