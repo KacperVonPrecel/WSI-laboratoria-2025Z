@@ -2,7 +2,6 @@ import numpy as np
 from two_player_games.games import dots_and_boxes
 from typing import Any, Callable, Dict, Tuple, List
 from collections import deque
-import random
 
 
 def get_lines_in_box(state: dots_and_boxes.DotsAndBoxesState, col: int, row: int) -> List[bool]:
@@ -21,8 +20,9 @@ def find_chains(state: dots_and_boxes.DotsAndBoxesState) -> List[int]:
 
     for col_idx in range(len(state.boxes)):
         for row_idx in range(len(state.boxes[0])):
-            if (col_idx, row_idx) in visited_boxes and sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
+            if (col_idx, row_idx) in visited_boxes or sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
                 continue
+
             chain_length = 0
             box_queue = deque([(col_idx, row_idx)])
             visited_boxes.add((col_idx, row_idx))
@@ -31,7 +31,7 @@ def find_chains(state: dots_and_boxes.DotsAndBoxesState) -> List[int]:
                 curr_col, curr_row = box_queue.popleft()
                 chain_length += 1
                 curr_lines = get_lines_in_box(state, curr_col, curr_row)
-                for (t_col, t_row), is_filled in zip([(-1, 0), (1, 0), (0, -1), (0, 1)], curr_lines):
+                for (t_col, t_row), is_filled in zip([(0, -1), (0, 1), (1, 0), (-1, 0)], curr_lines):
                     if is_filled:
                         continue
                     bb_col, bb_row = curr_col + t_col, curr_row + t_row
@@ -51,11 +51,29 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
     first_player = state.get_players()[0]
     second_player = state.get_players()[1]
     current_score = state.get_scores()
+    found_chains = []
+    max_num_of_lines = len(state.horizontals) + len(state.verticals)
+    safe_moves = 0
+
+    if len(state.get_moves()) <= max_num_of_lines * 0.6:
+        found_chains = find_chains(state)
+    else:
+        for col in range(len(state.boxes)):
+            for row in range(len(state.boxes[0])):
+                lines = get_lines_in_box(state, col, row)
+                if sum(lines) == 0:
+                    safe_moves += 1
 
     if first_player == maximizing_player:
         value = 10 * (current_score[first_player] - current_score[second_player])
+        value += safe_moves
+        for length in found_chains:
+            value += 3 * (length - 1)
+
     else:
         value = 10 * (current_score[second_player] - current_score[first_player])
+        for length in found_chains:
+            value -= 3 * (length - 1)
 
     for box_col_idx in range(len(state.boxes)):
         for box_row_idx in range(len(state.boxes[0])):
