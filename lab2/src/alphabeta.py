@@ -1,7 +1,35 @@
 import numpy as np
 from two_player_games.games import dots_and_boxes
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple, List
+from collections import deque
 import random
+
+
+def get_lines_in_box(state: dots_and_boxes.DotsAndBoxesState, col: int, row: int) -> List[bool]:
+    lines = [
+        state.horizontals[col][row], 
+        state.horizontals[col][row + 1],
+        state.verticals[row][col],
+        state.verticals[row][col + 1]
+        ]
+    return lines
+
+
+def find_chains(state: dots_and_boxes.DotsAndBoxesState) -> List[int]:
+    visited = set()
+
+    for col_idx in range(len(state.boxes)):
+        for row_idx in range(len(state.boxes[0])):
+            if (col_idx, row_idx) in visited and sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
+                continue
+            
+            chain_length = 0
+            box_queue = deque([(col_idx, row_idx)])
+            visited.add((col_idx, row_idx))
+            while box_queue:
+                curr_col, curr_row = box_queue.popleft()
+                curr_lines = get_lines_in_box(state, curr_col, curr_row)
+                for (t_col, t_row), is_filled in zip([()])
 
 
 def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) -> int:
@@ -15,48 +43,14 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
         value = 10 * (current_score[second_player] - current_score[first_player])
     
     for box_col_idx in range(len(state.boxes)):
-        for box_row_idx in range(len(state.boxes[box_col_idx])):
-            lines = [
-                state.horizontals[box_col_idx][box_row_idx], 
-                state.horizontals[box_col_idx][box_row_idx + 1],
-                state.verticals[box_row_idx][box_col_idx],
-                state.verticals[box_row_idx][box_col_idx + 1]
-                ]
+        for box_row_idx in range(len(state.boxes[0])):
+            lines = get_lines_in_box(state, box_col_idx, box_row_idx)
             if sum(lines) == len(lines) - 1:
                 if first_player == maximizing_player:
                     value += 5
                 else:
                     value -= 8
-
-
     
-
-    # if first_player.char == maximizing_player:
-    #     value = 5 * (current_score[first_player] - current_score[second_player])
-    #     for box_col_idx in range(len(state.boxes)):
-    #         for box_row_idx in range(len(state.boxes[box_col_idx])):
-    #             lines = [
-    #                 state.horizontals[box_col_idx][box_row_idx], 
-    #                 state.horizontals[box_col_idx][box_row_idx + 1],
-    #                 state.verticals[box_row_idx][box_col_idx],
-    #                 state.verticals[box_row_idx][box_col_idx + 1]
-    #                 ]
-    #             if sum(lines) == len(lines) - 1:
-    #                 value += 8
-
-    # else:
-    #     value = 5 * current_score[second_player] - current_score[first_player]
-    #     for box_col_idx in range(len(state.boxes)):
-    #         for box_row_idx in range(len(state.boxes[box_col_idx])):
-    #             lines = [
-    #                 state.horizontals[box_col_idx][box_row_idx], 
-    #                 state.horizontals[box_col_idx][box_row_idx + 1],
-    #                 state.verticals[box_row_idx][box_col_idx],
-    #                 state.verticals[box_row_idx][box_col_idx + 1]
-    #                 ]
-    #             if sum(lines) == len(lines) - 1:
-    #                 value -= 8
-
     return value
 
 
