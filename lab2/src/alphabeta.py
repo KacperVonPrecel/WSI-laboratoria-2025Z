@@ -7,7 +7,7 @@ import random
 
 def get_lines_in_box(state: dots_and_boxes.DotsAndBoxesState, col: int, row: int) -> List[bool]:
     lines = [
-        state.horizontals[col][row], 
+        state.horizontals[col][row],
         state.horizontals[col][row + 1],
         state.verticals[row][col],
         state.verticals[row][col + 1]
@@ -16,20 +16,35 @@ def get_lines_in_box(state: dots_and_boxes.DotsAndBoxesState, col: int, row: int
 
 
 def find_chains(state: dots_and_boxes.DotsAndBoxesState) -> List[int]:
-    visited = set()
+    visited_boxes = set()
+    chains = []
 
     for col_idx in range(len(state.boxes)):
         for row_idx in range(len(state.boxes[0])):
-            if (col_idx, row_idx) in visited and sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
+            if (col_idx, row_idx) in visited_boxes and sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
                 continue
-            
             chain_length = 0
             box_queue = deque([(col_idx, row_idx)])
-            visited.add((col_idx, row_idx))
+            visited_boxes.add((col_idx, row_idx))
+
             while box_queue:
                 curr_col, curr_row = box_queue.popleft()
+                chain_length += 1
                 curr_lines = get_lines_in_box(state, curr_col, curr_row)
-                for (t_col, t_row), is_filled in zip([()])
+                for (t_col, t_row), is_filled in zip([(-1, 0), (1, 0), (0, -1), (0, 1)], curr_lines):
+                    if is_filled:
+                        continue
+                    bb_col, bb_row = curr_col + t_col, curr_row + t_row
+
+                    if 0 <= bb_col < len(state.boxes) and 0 <= bb_row < len(state.boxes[0]):
+                        bordering_box_lines = get_lines_in_box(state, bb_col, bb_row)
+                        if sum(bordering_box_lines) == 2 or sum(bordering_box_lines) == 3:
+                            box_queue.append((bb_col, bb_row))
+                            visited_boxes.add((bb_col, bb_row))
+
+            chains.append(chain_length)
+
+    return chains
 
 
 def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) -> int:
@@ -41,7 +56,7 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
         value = 10 * (current_score[first_player] - current_score[second_player])
     else:
         value = 10 * (current_score[second_player] - current_score[first_player])
-    
+
     for box_col_idx in range(len(state.boxes)):
         for box_row_idx in range(len(state.boxes[0])):
             lines = get_lines_in_box(state, box_col_idx, box_row_idx)
@@ -50,7 +65,7 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
                     value += 5
                 else:
                     value -= 8
-    
+
     return value
 
 
