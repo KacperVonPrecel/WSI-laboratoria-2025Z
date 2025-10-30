@@ -2,6 +2,7 @@ import numpy as np
 from two_player_games.games import dots_and_boxes
 from typing import Any, Callable, Dict, Tuple, List
 from collections import deque
+import random
 
 
 def get_lines_in_box(state: dots_and_boxes.DotsAndBoxesState, col: int, row: int) -> List[bool]:
@@ -52,7 +53,7 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
     second_player = state.get_players()[1]
     current_score = state.get_scores()
     found_chains = []
-    max_num_of_lines = len(state.horizontals) + len(state.verticals)
+    max_num_of_lines = len(state.horizontals) * len(state.horizontals[0]) + len(state.verticals) * len(state.verticals[0])
     safe_moves = 0
 
     if len(state.get_moves()) <= max_num_of_lines * 0.6:
@@ -121,7 +122,14 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
     equal_moves = []
     # idx = 0
     # best_idx = 0
-    for move in state.get_moves():
+    move_pool = []
+    max_num_of_lines = len(state.horizontals) * len(state.horizontals[0]) + len(state.verticals) * len(state.verticals[0])
+    if len(state.get_moves()) >= max_num_of_lines * 0.6:
+        move_pool = np.random.choice(state.get_moves(), len(state.get_moves()) // 2, replace=False)
+    else:
+        move_pool = state.get_moves() 
+
+    for move in move_pool:
         value = alphabeta(game_state=state.make_move(move), depth=depth, maximizing_player=player)
 
         if value > best_value:
@@ -144,15 +152,15 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
 
 
 if __name__ == "__main__":
-    game = dots_and_boxes.DotsAndBoxes(size=3)
+    game = dots_and_boxes.DotsAndBoxes(size=4)
     i = 0
 
 while not game.is_finished():
     i += 1
     if game.state.get_current_player().char == '1':
-        best_curr_move = best_move(game.state, 5, '1')
+        best_curr_move = best_move(game.state, 3, '1')
     else:
-        best_curr_move = best_move(game.state, 3, '2')
+        best_curr_move = best_move(game.state, 2, '2')
 
     game.make_move(best_curr_move)
     print(f"After {i} turn:")
