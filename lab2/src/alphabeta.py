@@ -19,29 +19,29 @@ def find_chains(state: dots_and_boxes.DotsAndBoxesState) -> List[int]:
     visited_boxes = set()
     chains = []
 
-    for col_idx in range(len(state.boxes)):
-        for row_idx in range(len(state.boxes[0])):
-            if (col_idx, row_idx) in visited_boxes or sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
+    for row_idx in range(len(state.boxes)):
+        for col_idx in range(len(state.boxes[0])):
+            if (row_idx, col_idx) in visited_boxes or sum(get_lines_in_box(state, col_idx, row_idx)) != 3:
                 continue
 
             chain_length = 0
-            box_queue = deque([(col_idx, row_idx)])
-            visited_boxes.add((col_idx, row_idx))
+            box_queue = deque([(row_idx, col_idx)])
+            visited_boxes.add((row_idx, col_idx))
 
             while box_queue:
-                curr_col, curr_row = box_queue.popleft()
+                curr_row, curr_col = box_queue.popleft()
                 chain_length += 1
                 curr_lines = get_lines_in_box(state, curr_col, curr_row)
-                for (t_col, t_row), is_filled in zip([(0, -1), (0, 1), (1, 0), (-1, 0)], curr_lines):
+                for (t_row, t_col), is_filled in zip([(-1, 0), (1, 0), (0, -1), (0, 1)], curr_lines):
                     if is_filled:
                         continue
-                    bb_col, bb_row = curr_col + t_col, curr_row + t_row
+                    bb_row, bb_col = curr_row + t_row, curr_col + t_col
 
-                    if 0 <= bb_col < len(state.boxes) and 0 <= bb_row < len(state.boxes[0]):
+                    if 0 <= bb_row < len(state.boxes) and 0 <= bb_col < len(state.boxes[0]) and (bb_row, bb_col) not in visited_boxes:
                         bordering_box_lines = get_lines_in_box(state, bb_col, bb_row)
                         if sum(bordering_box_lines) == 2 or sum(bordering_box_lines) == 3:
-                            box_queue.append((bb_col, bb_row))
-                            visited_boxes.add((bb_col, bb_row))
+                            box_queue.append((bb_row, bb_col))
+                            visited_boxes.add((bb_row, bb_col))
 
             chains.append(chain_length)
 
@@ -56,16 +56,16 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
     max_num_of_lines = len(state.horizontals) * len(state.horizontals[0]) + len(state.verticals) * len(state.verticals[0])
     safe_moves = 0
 
-    if len(state.get_moves()) <= max_num_of_lines * 0.6:
+    if len(state.get_moves()) <= max_num_of_lines * 0.5:
         found_chains = find_chains(state)
     else:
-        for col in range(len(state.boxes)):
-            for row in range(len(state.boxes[0])):
+        for row in range(len(state.boxes)):
+            for col in range(len(state.boxes[0])):
                 lines = get_lines_in_box(state, col, row)
                 if sum(lines) == 0:
                     safe_moves += 1
 
-    if first_player == maximizing_player:
+    if first_player.char == maximizing_player:
         value = 10 * (current_score[first_player] - current_score[second_player])
         value += safe_moves
         for length in found_chains:
@@ -76,11 +76,11 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
         for length in found_chains:
             value -= 3 * (length - 1)
 
-    for box_col_idx in range(len(state.boxes)):
-        for box_row_idx in range(len(state.boxes[0])):
+    for box_row_idx in range(len(state.boxes)):
+        for box_col_idx in range(len(state.boxes[0])):
             lines = get_lines_in_box(state, box_col_idx, box_row_idx)
             if sum(lines) == len(lines) - 1:
-                if first_player == maximizing_player:
+                if first_player.char == maximizing_player:
                     value += 5
                 else:
                     value -= 8
@@ -124,10 +124,10 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
     # best_idx = 0
     move_pool = []
     max_num_of_lines = len(state.horizontals) * len(state.horizontals[0]) + len(state.verticals) * len(state.verticals[0])
-    if len(state.get_moves()) >= max_num_of_lines * 0.6:
-        move_pool = np.random.choice(state.get_moves(), len(state.get_moves()) // 2, replace=False)
+    if len(state.get_moves()) >= max_num_of_lines * 0.5 and len(state.get_moves()) > 10:
+        move_pool = np.random.choice(state.get_moves(), 10, replace=False)
     else:
-        move_pool = state.get_moves() 
+        move_pool = state.get_moves()
 
     for move in move_pool:
         value = alphabeta(game_state=state.make_move(move), depth=depth, maximizing_player=player)
@@ -152,7 +152,7 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
 
 
 if __name__ == "__main__":
-    game = dots_and_boxes.DotsAndBoxes(size=4)
+    game = dots_and_boxes.DotsAndBoxes(size=6)
     i = 0
 
 while not game.is_finished():
