@@ -5,6 +5,9 @@ from collections import deque
 import random
 
 
+MAX_NUM_OF_MOVES_TO_CHECK = 10
+
+
 def get_lines_in_box(state: dots_and_boxes.DotsAndBoxesState, col: int, row: int) -> List[bool]:
     lines = [
         state.horizontals[col][row],
@@ -56,15 +59,17 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
     max_num_of_lines = len(state.horizontals) * len(state.horizontals[0]) + len(state.verticals) * len(state.verticals[0])
     safe_moves = 0
 
+    # Checking board for chains in mid game; In early game counting safe moves
     if len(state.get_moves()) <= max_num_of_lines * 0.5:
         found_chains = find_chains(state)
     else:
         for row in range(len(state.boxes)):
             for col in range(len(state.boxes[0])):
                 lines = get_lines_in_box(state, col, row)
-                if sum(lines) == 0:
+                if sum(lines) == 1:
                     safe_moves += 1
 
+    # Evaluating game state by the current score, number of safe moves and found chains
     if first_player.char == maximizing_player:
         value = 10 * (current_score[first_player] - current_score[second_player])
         value += safe_moves
@@ -76,6 +81,7 @@ def heuristics(state: dots_and_boxes.DotsAndBoxesState, maximizing_player: str) 
         for length in found_chains:
             value -= 3 * (length - 1)
 
+    # Evaulating game state by the number of 3 wall boxes on the board
     for box_row_idx in range(len(state.boxes)):
         for box_col_idx in range(len(state.boxes[0])):
             lines = get_lines_in_box(state, box_col_idx, box_row_idx)
@@ -120,11 +126,10 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
     best_value = float("-inf")
     best_move = None
     equal_moves = []
-    # idx = 0
-    # best_idx = 0
     move_pool = []
     max_num_of_lines = len(state.horizontals) * len(state.horizontals[0]) + len(state.verticals) * len(state.verticals[0])
-    if len(state.get_moves()) >= max_num_of_lines * 0.5 and len(state.get_moves()) > 10:
+
+    if len(state.get_moves()) >= max_num_of_lines * 0.5 and len(state.get_moves()) > MAX_NUM_OF_MOVES_TO_CHECK:
         move_pool = np.random.choice(state.get_moves(), 10, replace=False)
     else:
         move_pool = state.get_moves()
@@ -137,17 +142,12 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
             best_move = move
             equal_moves = []
             equal_moves.append(best_move)
-            # best_idx = idx
         if value == best_value:
             equal_moves.append(move)
-
-        # idx += 1
 
     if len(equal_moves) > 1:
         best_move = np.random.choice(equal_moves)
 
-    # print(f"Best move index: {best_idx}")
-    print(f"Best value for player {player}: {best_value}")
     return best_move
 
 
