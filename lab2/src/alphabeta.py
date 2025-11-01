@@ -151,24 +151,24 @@ def best_move(state: dots_and_boxes.DotsAndBoxesState, depth: int, player: str) 
     return best_move
 
 
-if __name__ == "__main__":
-    game = dots_and_boxes.DotsAndBoxes(size=6)
-    i = 0
+# if __name__ == "__main__":
+#     game = dots_and_boxes.DotsAndBoxes(size=6)
+#     i = 0
 
-while not game.is_finished():
-    i += 1
-    if game.state.get_current_player().char == '1':
-        best_curr_move = best_move(game.state, 3, '1')
-    else:
-        best_curr_move = best_move(game.state, 2, '2')
+# while not game.is_finished():
+#     i += 1
+#     if game.state.get_current_player().char == '1':
+#         best_curr_move = best_move(game.state, 3, '1')
+#     else:
+#         best_curr_move = best_move(game.state, 2, '2')
 
-    game.make_move(best_curr_move)
-    print(f"After {i} turn:")
-    print(game.state)
-    print(" ")
+#     game.make_move(best_curr_move)
+#     print(f"After {i} turn:")
+#     print(game.state)
+#     print(" ")
 
-winner = game.get_winner()
-if winner is None:
-    print('Draw!')
-else:
-    print('Winner: Player ' + winner.char)
+# winner = game.get_winner()
+# if winner is None:
+#     print('Draw!')
+# else:
+#     print('Winner: Player ' + winner.char)
