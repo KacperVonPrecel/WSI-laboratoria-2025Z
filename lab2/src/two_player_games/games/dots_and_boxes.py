@@ -111,6 +111,14 @@ class DotsAndBoxesState(State):
 
     def __str__(self) -> str:
         text = []
+        first_row = []
+        second_row = []
+        for i in range(len(self.boxes)):
+            first_row.append(f" {i}")
+        for j in range(len(self.boxes) + 1):
+            second_row.append(f"{j} ")
+        text.append(''.join(first_row))
+        text.append(''.join(second_row))
 
         for row in range(len(self.boxes)):
             text.append(self._lines_row_to_str(row))
@@ -165,7 +173,7 @@ class DotsAndBoxesState(State):
             self, horizontals: List[List[bool]], verticals: List[List[bool]],
             move: DotsAndBoxesMove) -> Tuple[List[List[Player]], bool]:
         box1_col = None
-        box1_row = None        
+        box1_row = None
 
         box2_col = None
         box2_row = None
@@ -208,7 +216,7 @@ class DotsAndBoxesState(State):
         return new_boxes, changed
 
     def _lines_row_to_str(self, row):
-        return 'o' + 'o'.join('-' if col[row] else ' ' for col in self.horizontals) + 'o'
+        return 'o' + 'o'.join('-' if col[row] else ' ' for col in self.horizontals) + 'o' + f" <- {row}"
 
     def _row_to_str(self, row):
         chars = []
@@ -217,5 +225,6 @@ class DotsAndBoxesState(State):
             chars.append(box.char if box else ' ')
 
         chars.append('|' if self.verticals[row][-1] else ' ')
+        chars.append(f" <--- {row}")
 
         return ''.join(chars)

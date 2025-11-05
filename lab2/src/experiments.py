@@ -13,7 +13,7 @@ DRAW_SITUATION = str('N')
 if __name__ == "__main__":
     random.seed('1234')
     sizes = [3, 4, 5]
-    depths = [4]
+    depths = [3]
     player_order = [('S', 'L'), ('L', 'S')]
     times_table = np.zeros(shape=(len(sizes), len(player_order), len(depths), GAMES_IN_ONE_CYCLE))
     games_outcomes = np.ndarray(shape=(len(sizes), len(player_order), len(depths)), dtype=dict)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
                         if game.state.get_current_player().char == MAX_PLAYER:
                             best_curr_move = best_move(game.state, depth, MAX_PLAYER)
                         else:
-                            best_curr_move = best_move(game.state, 2, MIN_PLAYER)
+                            best_curr_move = best_move(game.state, 1, MIN_PLAYER)
 
                         game.make_move(best_curr_move)
                         print(f"After {i} turn:")
