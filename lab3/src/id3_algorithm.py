@@ -1,5 +1,5 @@
 from solver import Solver
-
+from node import Node
 
 class DecisionSolver(Solver):
     # def __init__(self, attributes, classes, depth):
