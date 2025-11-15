@@ -1,5 +1,8 @@
+from typing import Any, Callable
+
+
 class Node():
-    def __init__(self, attribute=None, children=None, label=None):
+    def __init__(self, attribute=None, label=None):
         self.attribute = attribute
-        self.children = children
+        self.children = {}
         self.label = label

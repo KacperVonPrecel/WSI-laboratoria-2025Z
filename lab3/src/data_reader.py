@@ -20,6 +20,13 @@ class DataReader():
 
     def read_data(self, file_handle):
         df = pd.read_csv(file_handle, sep=";")
+
+        for col in ['gender', 'cholesterol', 'gluc', 'smoke', 'alco', 'active']:
+            df[col].fillna(df[col].mode()[0], inplace=True)
+
+        for col in ['age', 'height', 'weight', 'ap_hi', 'ap_lo']:
+            df[col].fillna(df[col].median(), inplace=True)
+
         df["age"] = pd.qcut(df["age"], q=4, labels=[1, 2, 3, 4])
 
         df = df[(df["height"] > 0) & (df["height"] < 300)]
