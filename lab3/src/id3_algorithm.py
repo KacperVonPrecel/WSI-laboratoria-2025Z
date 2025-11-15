@@ -35,9 +35,14 @@ class DecisionSolver(Solver):
 
         return root
 
-
-    def entropy(self, set):
-        pass
+    def entropy(self, series):
+        counts = series.value_counts()
+        total = len(series)
+        ent = 0
+        for count in counts:
+            p = count / total
+            ent -= p * math.log(p)
+        return ent
 
     def infgain(self, set, attribute, target):
         pass
