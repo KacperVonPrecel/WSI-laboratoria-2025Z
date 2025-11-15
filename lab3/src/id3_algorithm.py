@@ -1,5 +1,7 @@
 from solver import Solver
 from node import Node
+from typing import Any, Callable, Dict, Tuple
+import numpy as np
 
 class DecisionSolver(Solver):
     # def __init__(self, attributes, classes, depth):
@@ -18,4 +20,3 @@ class DecisionSolver(Solver):
 
     def id3(self, X, y, max_depth):
         pass
-
