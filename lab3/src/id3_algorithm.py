@@ -1,7 +1,7 @@
 from solver import Solver
 from node import Node
 from typing import Any, Callable
-import numpy as np
+import pandas as pd
 import math
 
 
@@ -16,7 +16,7 @@ class DecisionSolver(Solver):
     def predict(self, X):
         pass
 
-    def id3(self, df, attributes: list, target: str, depth: int):
+    def id3(self, df: pd.DataFrame, attributes: list, target: str, depth: int):
         if len(df[target].unique()) == 1:
             return Node(label=df[target].iloc[0])
 
@@ -35,7 +35,7 @@ class DecisionSolver(Solver):
 
         return root
 
-    def entropy(self, series):
+    def entropy(self, series: pd.Series):
         counts = series.value_counts()
         total = len(series)
         ent = 0
@@ -44,5 +44,13 @@ class DecisionSolver(Solver):
             ent -= p * math.log(p)
         return ent
 
-    def infgain(self, set, attribute, target):
-        pass
+    def infgain(self, df: pd.DataFrame, attribute: str, target: str):
+        total_entropy = self.entropy(df[target])
+        weighted_entropy = 0
+
+        for value in df[attribute].unique():
+            series = df[df[attribute] == value]
+            series_entropy = self.entropy(series)
+            weighted_entropy += (len(series) / len(df)) * series_entropy
+
+        return total_entropy - weighted_entropy
