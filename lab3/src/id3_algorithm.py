@@ -55,12 +55,21 @@ class DecisionSolver(Solver):
 
         return total_entropy - weighted_entropy
 
-    def predict(self, df: pd.DataFrame, node: Node, target):
+    def check_accuracy(self, df: pd.DataFrame, node: Node, target: str):
         correct = 0
+        predicted_classes = self.predict(df, node)
+        i = 0
         for _, row in df.iterrows():
-            if self._predict_sample(row, node) == row[target]:
+            if predicted_classes[i] == row[target]:
                 correct += 1
+            i += 1
         return correct / len(df)
+
+    def predict(self, df: pd.DataFrame, node: Node):
+        predicted_classes = []
+        for _, row in df.iterrows():
+            predicted_classes.append(self._predict_sample(row, node))
+        return predicted_classes
 
     def _predict_sample(self, sample, node: Node):
         if node.label is not None:
