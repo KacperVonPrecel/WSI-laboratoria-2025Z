@@ -41,7 +41,7 @@ class DataReader():
         df = df[(df["ap_lo"] > 0) & (df["ap_lo"] < 300)]
         df["ap_lo"] = pd.cut(df["ap_lo"], bins=4, labels=[1, 2, 3, 4])
 
-        self._train_df, temp_df = train_test_split(df, test_size=0.20, random_state=42, shuffle=True)
+        self._train_df, temp_df = train_test_split(df, test_size=0.30, random_state=42, shuffle=True)
 
         self._val_df, self._test_df = train_test_split(temp_df, test_size=0.50, random_state=42, shuffle=True)
 
