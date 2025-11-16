@@ -10,16 +10,13 @@ class DecisionSolver(Solver):
     def get_parameters(self):
         pass
 
-    def fit(self, df: pd.DataFrame, depth: int):
+    def fit(self, df: pd.DataFrame, depth: int) -> Node:
         temp_list = df.columns.tolist()
         attributes_list = temp_list[1:-1]
         target = temp_list[-1]
         return self._id3(df, attributes_list, target, depth)
 
-    def predict(self, X):
-        pass
-
-    def _id3(self, df: pd.DataFrame, attributes: list, target: str, depth: int):
+    def _id3(self, df: pd.DataFrame, attributes: list, target: str, depth: int) -> Node:
         if len(df[target].unique()) == 1:
             return Node(label=df[target].iloc[0])
 
@@ -57,3 +54,19 @@ class DecisionSolver(Solver):
             weighted_entropy += (len(series) / len(df)) * series_entropy
 
         return total_entropy - weighted_entropy
+
+    def predict(self, df: pd.DataFrame, node: Node, target):
+        correct = 0
+        for _, row in df.iterrows():
+            if self._predict_sample(row, node) == row[target]:
+                correct += 1
+        return correct / len(df)
+
+    def _predict_sample(self, sample, node: Node):
+        if node.label is not None:
+            return node.label
+        curr_attr_val = sample[node.attribute]
+        child = node.children.get(curr_attr_val)
+        if child is None:
+            return None
+        return self._predict_sample(sample, child)
