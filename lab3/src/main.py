@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 MIN_DEPTH = 1
 MAX_DEPTH = 12
 
-tree_nums = [100, 200, 300, 400, 500, 600]
+TREE_NUMS = [100, 200, 300, 400, 500, 600, 700, 800]
 
 def testing_id3(reader: DataReader, solver: DecisionSolver, target: str):
     generated_trees = []
@@ -44,9 +44,36 @@ def testing_id3(reader: DataReader, solver: DecisionSolver, target: str):
 
 def testing_rf(reader: DataReader, solver: RandomForest, target: str):
     print("Fitting ...")
-    forest = solver.fit(reader.get_train_df(), 100)
-    accuracy = solver.check_accuracy(reader.get_val_df(), forest, target)
-    print(f"Accuracy: {accuracy}")
+    generated_forest = []
+    accuracy_list = []
+    for tree_count in TREE_NUMS:
+        generated_forest.append(solver.fit(reader.get_train_df(), tree_count))
+
+    for forest in generated_forest:
+        accuracy_list.append(round(solver.check_accuracy(reader.get_val_df(), forest, target) * 100, 2))
+
+    best_accuracy = max(accuracy_list)
+    best_forest = generated_forest[accuracy_list.index(best_accuracy)]
+
+    final_accuracy = round(solver.check_accuracy(reader.get_val_df(), best_forest, target) * 100, 2)
+
+    print(f"Best tree count: {TREE_NUMS[generated_forest.index(best_forest)]}")
+    print(f"Best accuracy: {final_accuracy}")
+
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(111)
+    x_labels = [i for i in range(1, len(TREE_NUMS) + 1)]
+    ax.set_xlabel("Trees number in forest", fontsize=18)
+    ax.set_ylabel("Accuracy in %", rotation=90, fontsize=18)
+    ax.set_xticks(x_labels)
+
+    tp = ax.bar(x_labels, accuracy_list, color="blue")
+
+    plt.title("Dokładność RF dla wybranej ilości drzew", fontweight='bold', fontsize=26)
+    plt.savefig("Dokładność RF dla wybranej ilości drzew")
+    plt.show()
+
+    print("Done")
 
 
 if __name__ == "__main__":
