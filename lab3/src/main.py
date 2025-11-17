@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 MIN_DEPTH = 1
 MAX_DEPTH = 12
 
-TREE_NUMS = [100, 200, 300, 400, 500, 600, 700, 800]
+TREE_NUMS = [200, 400, 600, 800, 1000, 1200, 1400, 1600]
 
 def testing_id3(reader: DataReader, solver: DecisionSolver, target: str):
     generated_trees = []
@@ -55,7 +55,7 @@ def testing_rf(reader: DataReader, solver: RandomForest, target: str):
     best_accuracy = max(accuracy_list)
     best_forest = generated_forest[accuracy_list.index(best_accuracy)]
 
-    final_accuracy = round(solver.check_accuracy(reader.get_val_df(), best_forest, target) * 100, 2)
+    final_accuracy = round(solver.check_accuracy(reader.get_test_df(), best_forest, target) * 100, 2)
 
     print(f"Best tree count: {TREE_NUMS[generated_forest.index(best_forest)]}")
     print(f"Best accuracy: {final_accuracy}")
