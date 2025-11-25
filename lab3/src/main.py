@@ -86,18 +86,18 @@ if __name__ == "__main__":
     print("Input file to save testing results from id3:")
     id3_file = str(input())
     id3_result_list = []
-    with open(data_set) as file_h:
-        reader = DataReader()
-        id3_solver = DecisionSolver()
-        rf_solver = RandomForest()
-        for rand_seed in SETS_RAND_SEED:
+    reader = DataReader()
+    id3_solver = DecisionSolver()
+    rf_solver = RandomForest()
+    for rand_seed in SETS_RAND_SEED:
+        with open(data_set, "r") as file_h:
             reader.read_data(file_h, rand_seed)
             target = reader.get_train_df().columns.tolist()[-1]
-            id3_result_list.append(testing_id3(reader, id3_solver, target)) 
+            id3_result_list.append(testing_id3(reader, id3_solver, target))
             # testing_rf(reader, rf_solver, target)
 
     with open(id3_file, "w") as file_h:
         for row in range(len(id3_result_list)):
             for column in range(MAX_DEPTH - 1):
-                file_h.write(f"{id3_result_list[row][column]}")
+                file_h.write(f"{id3_result_list[row][column]} ")
             file_h.write('\n')
