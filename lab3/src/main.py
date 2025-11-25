@@ -64,20 +64,22 @@ def testing_rf(reader: DataReader, solver: RandomForest, target: str):
     print(f"Best tree count: {TREE_NUMS[generated_forest.index(best_forest)]}")
     print(f"Best accuracy: {final_accuracy}")
 
-    fig = plt.figure(figsize=(10, 7))
-    ax = fig.add_subplot(111)
-    x_labels = [i for i in range(1, len(TREE_NUMS) + 1)]
-    ax.set_xlabel("Trees number in forest", fontsize=18)
-    ax.set_ylabel("Accuracy in %", rotation=90, fontsize=18)
-    ax.set_xticks(x_labels)
+    # fig = plt.figure(figsize=(10, 7))
+    # ax = fig.add_subplot(111)
+    # x_labels = [i for i in range(1, len(TREE_NUMS) + 1)]
+    # ax.set_xlabel("Trees number in forest", fontsize=18)
+    # ax.set_ylabel("Accuracy in %", rotation=90, fontsize=18)
+    # ax.set_xticks(x_labels)
 
-    tp = ax.bar(x_labels, accuracy_list, color="blue")
+    # tp = ax.bar(x_labels, accuracy_list, color="blue")
 
-    plt.title("Dokładność RF dla wybranej ilości drzew", fontweight='bold', fontsize=26)
-    plt.savefig("Dokładność RF dla wybranej ilości drzew")
-    plt.show()
+    # plt.title("Dokładność RF dla wybranej ilości drzew", fontweight='bold', fontsize=26)
+    # plt.savefig("Dokładność RF dla wybranej ilości drzew")
+    # plt.show()
 
-    print("Done")
+    # print("Done")
+
+    return accuracy_list
 
 
 if __name__ == "__main__":
@@ -86,6 +88,7 @@ if __name__ == "__main__":
     print("Input file to save testing results from id3:")
     id3_file = str(input())
     id3_result_list = []
+    rf_result_list = []
     reader = DataReader()
     id3_solver = DecisionSolver()
     rf_solver = RandomForest()
@@ -93,8 +96,8 @@ if __name__ == "__main__":
         with open(data_set, "r") as file_h:
             reader.read_data(file_h, rand_seed)
             target = reader.get_train_df().columns.tolist()[-1]
-            id3_result_list.append(testing_id3(reader, id3_solver, target))
-            # testing_rf(reader, rf_solver, target)
+            # id3_result_list.append(testing_id3(reader, id3_solver, target))
+            rf_result_list.append(testing_rf(reader, rf_solver, target))
 
     with open(id3_file, "w") as file_h:
         for row in range(len(id3_result_list)):
