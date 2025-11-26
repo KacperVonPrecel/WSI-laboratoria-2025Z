@@ -6,7 +6,8 @@ from matplotlib import pyplot as plt
 MIN_DEPTH = 1
 MAX_DEPTH = 12
 
-TREE_NUMS = [200, 400, 600, 800, 1000, 1200, 1400, 1600]
+# TREE_NUMS = [200, 400, 600, 800, 1000, 1200, 1400]
+TREE_NUMS = [20, 40, 60, 80, 100, 120, 140]
 
 SETS_RAND_SEED = [38, 42, 46, 50, 54]
 
@@ -99,8 +100,14 @@ if __name__ == "__main__":
             # id3_result_list.append(testing_id3(reader, id3_solver, target))
             rf_result_list.append(testing_rf(reader, rf_solver, target))
 
+    # with open(id3_file, "w") as file_h:
+    #     for row in range(len(id3_result_list)):
+    #         for column in range(MAX_DEPTH - 1):
+    #             file_h.write(f"{id3_result_list[row][column]} ")
+    #         file_h.write('\n')
+
     with open(id3_file, "w") as file_h:
-        for row in range(len(id3_result_list)):
-            for column in range(MAX_DEPTH - 1):
-                file_h.write(f"{id3_result_list[row][column]} ")
+        for row in range(len(rf_result_list)):
+            for column in range(len(TREE_NUMS)):
+                file_h.write(f"{rf_result_list[row][column]} ")
             file_h.write('\n')
