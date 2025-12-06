@@ -2,10 +2,11 @@ import numpy as np
 
 
 class GradientDescentAckley:
-    def __init__(self, step_size=0.1, max_iter=1000, tol=1e-4):
+    def __init__(self, step_size=0.1, max_iter=1000, tol=1e-4, momentum=0.9):
         self.step_size = step_size
         self.max_iter = max_iter
         self.tol = tol
+        self.momentum = momentum
 
     def ackley_1d(self, x):
         return -20 * np.exp(-0.2*np.abs(x)) - np.exp(np.cos(2 * np.pi * x)) + 20 + np.exp(1)
@@ -63,6 +64,51 @@ class GradientDescentAckley:
         for _ in range(self.max_iter):
             grad = self.gradient_ackley_2d(point[0], point[1])
             new_point = point - self.step_size * grad
+
+            history.append(new_point.copy())
+            values.append(self.ackley_2d(new_point[0], new_point[1]))
+
+            if np.linalg.norm(new_point - point) < self.tol:
+                break
+
+            point = new_point
+
+        return point, self.ackley_2d(point[0], point[1]), history, values
+
+    def optimize_ackley_1d_sgd_and_mom(self, x0: float):
+        x = x0
+        vx = 0.0
+        history = [x]
+        values = [self.ackley_1d(x)]
+
+        for _ in range(self.max_iter):
+            noise = np.random.normal(0, 0.5, 1)
+            grad = self.gradient_ackley_1d(x) + noise
+            vx = self.momentum * vx - self.step_size * grad
+            new_x = x + vx
+
+            history.append(new_x)
+            values.append(self.ackley_1d(new_x))
+
+            if np.abs(new_x - x) < self.tol:
+                break
+
+            x = new_x
+
+        return float(x), float(self.ackley_1d(x)), history, values
+
+    def optimize_ackley_2d_sgd_and_mom(self, x0, y0):
+        point = np.array([x0, y0])
+        velocity = np.zeros(2)
+        history = [point.copy()]
+        values = [self.ackley_2d(point[0], point[1])]
+
+        for _ in range(self.max_iter):
+            noise = np.random.normal(0, 0.5, 2)
+            grad = self.gradient_ackley_2d(point[0], point[1]) + noise
+            velocity[0] = self.momentum * velocity[0] - self.step_size * grad[0]
+            velocity[1] = self.momentum * velocity[1] - self.step_size * grad[1]
+            new_point = point + velocity
 
             history.append(new_point.copy())
             values.append(self.ackley_2d(new_point[0], new_point[1]))
