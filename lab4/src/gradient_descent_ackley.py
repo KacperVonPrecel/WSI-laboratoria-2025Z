@@ -36,3 +36,40 @@ class GradientDescentAckley:
             x = new_x
 
         return x, self.ackley_1d(x), history, values
+
+    def ackley_2d(self, x, y):
+        return -20 * np.exp(-0.2 * np.sqrt((x**2 + y**2) / 2)) - np.exp((np.cos(2 * np.pi * x) + np.cos(2 * np.pi * y)) / 2) + 20 + np.exp(1)
+
+    def gradient_ackley_2d(self, x, y):
+        norm = np.sqrt(x**2 + y**2)
+        if norm < 1e-10:
+            term1_x = 0
+            term2_y = 0
+        else:
+            term1_x = (2 * x / norm) * np.exp(-0.2 * norm / np.sqrt(2))
+            term1_y = (2 * y / norm) * np.exp(-0.2 * norm / np.sqrt(2))
+
+        exp_term = np.exp((np.cos(2 * np.pi * x) + np.cos(2 * np.pi* y))/2)
+        term2_x = np.pi * np.sin(2 * np.pi * x) * exp_term
+        term2_y = np.pi * np.sin(2 * np.pi * y) * exp_term
+
+        return np.array([term1_x + term2_x, term1_y + term2_y])
+
+    def optimize_ackley_2d(self, x0, y0):
+        point = np.array([x0, y0])
+        history = [point.copy()]
+        values = [self.ackley_2d(point[0], point[1])]
+
+        for _ in range(self.max_iter):
+            grad = self.gradient_ackley_2d(point[0], point[1])
+            new_point = point - self.step_size * grad
+
+            history.append(new_point.copy())
+            values.append(self.ackley_2d(new_point[0], new_point[1]))
+
+            if np.linalg.norm(new_point - point) < self.tol:
+                break
+
+            point = new_point
+
+        return point, self.ackley_2d(point[0], point[1]), history, values
