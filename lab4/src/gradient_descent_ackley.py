@@ -2,14 +2,14 @@ import numpy as np
 
 
 class GradientDescentAckley:
-    def __init__(self, step_size=0.1, max_iter=1000, tol=1e-4, momentum=0.9):
+    def __init__(self, step_size=0.1, max_iter=5000, tol=1e-8, momentum=0.9):
         self.step_size = step_size
         self.max_iter = max_iter
         self.tol = tol
         self.momentum = momentum
 
     def ackley_1d(self, x):
-        return -20 * np.exp(-0.2*np.abs(x)) - np.exp(np.cos(2 * np.pi * x)) + 20 + np.exp(1)
+        return -20 * np.exp(-0.2 * np.abs(x)) - np.exp(np.cos(2 * np.pi * x)) + 20 + np.exp(1)
 
     def gradient_ackley_1d(self, x):
         if np.abs(x) < 1e-10:
@@ -29,7 +29,7 @@ class GradientDescentAckley:
             new_x = x - self.step_size * grad
 
             history.append(new_x)
-            values.append(self.ackley_1d(new_x))
+            values.append(float(self.ackley_1d(new_x)))
 
             if np.abs(new_x - x) < self.tol:
                 break
@@ -45,7 +45,7 @@ class GradientDescentAckley:
         norm = np.sqrt(x**2 + y**2)
         if norm < 1e-10:
             term1_x = 0
-            term2_y = 0
+            term1_y = 0
         else:
             term1_x = (2 * x / norm) * np.exp(-0.2 * norm / np.sqrt(2))
             term1_y = (2 * y / norm) * np.exp(-0.2 * norm / np.sqrt(2))
@@ -66,7 +66,7 @@ class GradientDescentAckley:
             new_point = point - self.step_size * grad
 
             history.append(new_point.copy())
-            values.append(self.ackley_2d(new_point[0], new_point[1]))
+            values.append(float(self.ackley_2d(new_point[0], new_point[1])))
 
             if np.linalg.norm(new_point - point) < self.tol:
                 break
@@ -82,13 +82,14 @@ class GradientDescentAckley:
         values = [self.ackley_1d(x)]
 
         for _ in range(self.max_iter):
-            noise = np.random.normal(0, 0.5, 1)
+            noise = np.random.normal(0, 0.05, 1)
             grad = self.gradient_ackley_1d(x) + noise
             vx = self.momentum * vx - self.step_size * grad
+            vx = np.clip(vx, -10, 10)
             new_x = x + vx
 
             history.append(new_x)
-            values.append(self.ackley_1d(new_x))
+            values.append(float(self.ackley_1d(new_x)))
 
             if np.abs(new_x - x) < self.tol:
                 break
@@ -104,14 +105,15 @@ class GradientDescentAckley:
         values = [self.ackley_2d(point[0], point[1])]
 
         for _ in range(self.max_iter):
-            noise = np.random.normal(0, 0.5, 2)
+            noise = np.random.normal(0, 0.05, 2)
             grad = self.gradient_ackley_2d(point[0], point[1]) + noise
             velocity[0] = self.momentum * velocity[0] - self.step_size * grad[0]
             velocity[1] = self.momentum * velocity[1] - self.step_size * grad[1]
+            velocity = np.clip(velocity, -10, 10)
             new_point = point + velocity
 
             history.append(new_point.copy())
-            values.append(self.ackley_2d(new_point[0], new_point[1]))
+            values.append(float(self.ackley_2d(new_point[0], new_point[1])))
 
             if np.linalg.norm(new_point - point) < self.tol:
                 break
