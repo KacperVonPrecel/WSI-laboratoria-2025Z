@@ -1,9 +1,11 @@
-from gradient_descent_ackley import GradientDescentAckley
+from gradient_descent import GradientDescent
+from ackley_func import AckleyFunc
 import matplotlib.pyplot as plt
 import numpy as np
 
 STEP_SIZES = [0.001, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.5]
 RANDOM_SEEDS = [30, 40, 50, 60, 70]
+
 
 def step_size_tests():
     ackley_1d_results = []
@@ -13,19 +15,29 @@ def step_size_tests():
     for step_size in STEP_SIZES:
         print(f"\nStep size = {step_size}")
         print("Starting point: x = 5.0")
-        optimizer = GradientDescentAckley(step_size, max_iter=1000, tol=1e-8, momentum=0.9)
-        x_output, f_output, history, values = optimizer.optimize_ackley_1d(parameters=[5.0])
+
+        optimizer = GradientDescent(step_size, max_iter=1000, tol=1e-8, momentum=0.9)
+
+        x_output, f_output, history, values = optimizer.optimize_func(
+                                                        parameters=[5.0],
+                                                        func_to_opt=AckleyFunc.ackley_1d,
+                                                        func_grad=AckleyFunc.gradient_ackley_1d
+                                                        )
         ackley_1d_values.append(values)
         ackley_1d_results.append({
             'step': step_size,
             "iterations": len(history),
             'optimum_val': f_output,
-            "optimum_x": x_output,
+            "optimum_x": x_output[0],
         })
-        print(f"  1D: x={x_output:.6f}, f(x)={f_output:.6f}, iterations={len(history)}")
+        print(f"  1D: x={x_output[0]:.6f}, f(x)={f_output:.6f}, iterations={len(history)}")
 
         print("Starting point: (x = 5.0, y = 5.0)")
-        xy_output, f_output, history, values = optimizer.optimize_ackley_2d(parameters=[5.0, 5.0])
+        xy_output, f_output, history, values = optimizer.optimize_func(
+                                                        parameters=[5.0, 5.0],
+                                                        func_to_opt=AckleyFunc.ackley_1d,
+                                                        func_grad=AckleyFunc.gradient_ackley_2d
+                                                        )
         ackley_2d_results.append({
             'step': step_size,
             "iterations": len(history),
@@ -59,7 +71,7 @@ def step_size_sgd_tests():
             np.random.seed(rand_seed)
             print(f"\nStep size = {step_size}")
             print("Starting point: x = 5.0")
-            optimizer = GradientDescentAckley(step_size, max_iter=1000, tol=1e-4, momentum=0.7)
+            optimizer = GradientDescent(step_size, max_iter=1000, tol=1e-4, momentum=0.7)
             x_output, f_output, history, values = optimizer.optimize_ackley_1d_sgd_and_mom(parameters=[5.0])
             x_output_list.append(x_output)
             f_1d_output_list.append(f_output)
@@ -121,7 +133,7 @@ def visualize_1d_results(values_1d, step_size):
 
 def visualize_2d_results(history, step_size):
     plt.subplot(1, 1, 1)
-    optimizer = GradientDescentAckley(step_size=step_size, max_iter=1000)
+    optimizer = GradientDescent(step_size=step_size, max_iter=1000)
     history = np.array(history)
 
     # Kontury funkcji
@@ -149,15 +161,14 @@ def visualize_2d_results(history, step_size):
 
 
 if __name__ == "__main__":
-    # step_sizes = [0.001, 0.01, 0.05, 0.1, 0.2, 0.5]
 
     print("Gradient descent")
     ackley_1d_results, ackley_1d_values, ackley_2d_results = step_size_tests()
     print("\nDone calculating")
     # print("=" * 100)
-    print("SGD with momentum")
-    ackley_1d_sgd_results, ackley_1d_sgd_values, ackley_2d_sgd_results = step_size_sgd_tests()
-    print("\nDone calculating")
+    # print("SGD with momentum")
+    # ackley_1d_sgd_results, ackley_1d_sgd_values, ackley_2d_sgd_results = step_size_sgd_tests()
+    # print("\nDone calculating")
 
     # for step_size in step_sizes:
     #     visualize_1d_results(values_1d=ackley_1d_values[step_sizes.index(step_size)], step_size=step_size)
