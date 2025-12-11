@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Callable
 
+GRAD_CLIP = 1.0
+
 
 class GradientDescent:
     def __init__(self, step_size=0.1, max_iter=5000, tol=1e-8, momentum=0.9):
@@ -21,32 +23,37 @@ class GradientDescent:
             history.append(new_point.copy())
             values.append(float(func_to_opt(new_point)))
 
-            if np.linalg.norm(new_point - point) < self.tol:
+            if np.linalg.norm(grad) < self.tol:
+                point = new_point
                 break
 
             point = new_point
 
-        return point, func_to_opt(point), history, values
+        return point, values[-1], history, values
 
     def optimize_func_sgd_and_mom(self, parameters: np.array, func_to_opt: Callable, func_grad: Callable):
         point = parameters.copy()
-        velocity = np.zeros(2)
+        dim = len(parameters)
+        velocity = np.zeros(dim)
         history = [point.copy()]
         values = [func_to_opt(point)]
 
         for _ in range(self.max_iter):
-            noise = np.random.normal(0, 0.05, 2)
+            noise = np.random.normal(0, 0.05, dim)
             grad = func_grad(point) + noise
             velocity = self.momentum * velocity - self.step_size * grad
-            velocity = np.clip(velocity, -10, 10)
             new_point = point + velocity
+
+            if np.linalg.norm(grad) > GRAD_CLIP:
+                grad = grad * GRAD_CLIP / np.linalg.norm(grad)
 
             history.append(new_point.copy())
             values.append(float(func_to_opt(new_point)))
 
-            if np.linalg.norm(new_point - point) < self.tol:
+            if np.linalg.norm(grad) < self.tol:
+                point = new_point
                 break
 
             point = new_point
 
-        return point, func_to_opt(point), history, values
+        return point, values[-1], history, values
