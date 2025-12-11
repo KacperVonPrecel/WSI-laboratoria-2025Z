@@ -2,14 +2,15 @@ from gradient_descent_ackley import GradientDescentAckley
 import matplotlib.pyplot as plt
 import numpy as np
 
+STEP_SIZES = [0.001, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.5]
+RANDOM_SEEDS = [30, 40, 50, 60, 70]
 
 def step_size_tests():
-    step_sizes = [0.001, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.5]
     ackley_1d_results = []
     ackley_1d_values = []
     ackley_2d_results = []
 
-    for step_size in step_sizes:
+    for step_size in STEP_SIZES:
         print(f"\nStep size = {step_size}")
         print("Starting point: x = 5.0")
         optimizer = GradientDescentAckley(step_size, max_iter=1000, tol=1e-8, momentum=0.9)
@@ -37,9 +38,6 @@ def step_size_tests():
 
 
 def step_size_sgd_tests():
-    random_seeds = [30, 40, 50, 60, 70]
-    step_sizes = [0.001, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.5]
-
     avg_1d_output = []
     avg_1d_f_output = []
     avg_2d_x_output = []
@@ -50,14 +48,14 @@ def step_size_sgd_tests():
     ackley_1d_sgd_values = []
     ackley_2d_sgd_results = []
 
-    for step_size in step_sizes:
+    for step_size in STEP_SIZES:
         x_output_list = []
         f_1d_output_list = []
         x_only_output_list = []
         y_only_output_list = []
         f_2d_output_list = []
 
-        for rand_seed in random_seeds:
+        for rand_seed in RANDOM_SEEDS:
             np.random.seed(rand_seed)
             print(f"\nStep size = {step_size}")
             print("Starting point: x = 5.0")
