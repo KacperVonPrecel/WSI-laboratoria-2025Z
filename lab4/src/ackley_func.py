@@ -35,7 +35,7 @@ class AckleyFunc:
             term1_x = (2 * x / norm) * np.exp(-0.2 * norm / np.sqrt(2))
             term1_y = (2 * y / norm) * np.exp(-0.2 * norm / np.sqrt(2))
 
-        exp_term = np.exp((np.cos(2 * np.pi * x) + np.cos(2 * np.pi* y))/2)
+        exp_term = np.exp((np.cos(2 * np.pi * x) + np.cos(2 * np.pi * y)) / 2)
         term2_x = np.pi * np.sin(2 * np.pi * x) * exp_term
         term2_y = np.pi * np.sin(2 * np.pi * y) * exp_term
 
