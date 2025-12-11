@@ -14,7 +14,7 @@ def step_size_tests():
         print(f"\nStep size = {step_size}")
         print("Starting point: x = 5.0")
         optimizer = GradientDescentAckley(step_size, max_iter=1000, tol=1e-8, momentum=0.9)
-        x_output, f_output, history, values = optimizer.optimize_ackley_1d(x0=5.0)
+        x_output, f_output, history, values = optimizer.optimize_ackley_1d(parameters=[5.0])
         ackley_1d_values.append(values)
         ackley_1d_results.append({
             'step': step_size,
@@ -25,7 +25,7 @@ def step_size_tests():
         print(f"  1D: x={x_output:.6f}, f(x)={f_output:.6f}, iterations={len(history)}")
 
         print("Starting point: (x = 5.0, y = 5.0)")
-        xy_output, f_output, history, values = optimizer.optimize_ackley_2d(x0=5.0, y0=5.0)
+        xy_output, f_output, history, values = optimizer.optimize_ackley_2d(parameters=[5.0, 5.0])
         ackley_2d_results.append({
             'step': step_size,
             "iterations": len(history),
@@ -60,7 +60,7 @@ def step_size_sgd_tests():
             print(f"\nStep size = {step_size}")
             print("Starting point: x = 5.0")
             optimizer = GradientDescentAckley(step_size, max_iter=1000, tol=1e-4, momentum=0.7)
-            x_output, f_output, history, values = optimizer.optimize_ackley_1d_sgd_and_mom(x0=5.0)
+            x_output, f_output, history, values = optimizer.optimize_ackley_1d_sgd_and_mom(parameters=[5.0])
             x_output_list.append(x_output)
             f_1d_output_list.append(f_output)
             ackley_1d_sgd_values.append(values)
@@ -73,7 +73,7 @@ def step_size_sgd_tests():
             print(f"  1D: x={x_output:.6f}, f(x)={f_output:.6f}, iterations={len(history)}")
 
             print("Starting point: (x = 5.0, y = 5.0)")
-            xy_output, f_output, history, values = optimizer.optimize_ackley_2d_sgd_and_mom(x0=5.0, y0=5.0)
+            xy_output, f_output, history, values = optimizer.optimize_ackley_2d_sgd_and_mom(parameters=[5.0, 5.0])
             x_only_output_list.append(xy_output[0])
             y_only_output_list.append(xy_output[1])
             f_2d_output_list.append(f_output)
@@ -151,9 +151,9 @@ def visualize_2d_results(history, step_size):
 if __name__ == "__main__":
     # step_sizes = [0.001, 0.01, 0.05, 0.1, 0.2, 0.5]
 
-    # print("Gradient descent")
-    # ackley_1d_results, ackley_1d_values, ackley_2d_results = step_size_tests()
-    # print("\nDone calculating")
+    print("Gradient descent")
+    ackley_1d_results, ackley_1d_values, ackley_2d_results = step_size_tests()
+    print("\nDone calculating")
     # print("=" * 100)
     print("SGD with momentum")
     ackley_1d_sgd_results, ackley_1d_sgd_values, ackley_2d_sgd_results = step_size_sgd_tests()

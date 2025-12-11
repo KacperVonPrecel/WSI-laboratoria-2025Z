@@ -8,10 +8,12 @@ class GradientDescentAckley:
         self.tol = tol
         self.momentum = momentum
 
-    def ackley_1d(self, x):
+    def ackley_1d(self, parameters):
+        x = parameters[0]
         return -20 * np.exp(-0.2 * np.abs(x)) - np.exp(np.cos(2 * np.pi * x)) + 20 + np.exp(1)
 
-    def gradient_ackley_1d(self, x):
+    def gradient_ackley_1d(self, parameters):
+        x = parameters
         if np.abs(x) < 1e-10:
             sign = 0
         else:
@@ -19,8 +21,8 @@ class GradientDescentAckley:
 
         return 4 * sign * np.exp(-0.2 * np.abs(x)) + 2 * np.pi * np.sin(2 * np.pi * x) * np.exp(np.cos(2 * np.pi * x))
 
-    def optimize_ackley_1d(self, x0):
-        x = x0
+    def optimize_ackley_1d(self, parameters):
+        x = np.array(parameters)
         history = [x]
         values = [self.ackley_1d(x)]
 
@@ -36,12 +38,16 @@ class GradientDescentAckley:
 
             x = new_x
 
-        return x, self.ackley_1d(x), history, values
+        return x[0], self.ackley_1d(x), history, values
 
-    def ackley_2d(self, x, y):
+    def ackley_2d(self, parameters):
+        x = parameters[0]
+        y = parameters[1]
         return -20 * np.exp(-0.2 * np.sqrt((x**2 + y**2) / 2)) - np.exp((np.cos(2 * np.pi * x) + np.cos(2 * np.pi * y)) / 2) + 20 + np.exp(1)
 
-    def gradient_ackley_2d(self, x, y):
+    def gradient_ackley_2d(self, parameters):
+        x = parameters[0]
+        y = parameters[1]
         norm = np.sqrt(x**2 + y**2)
         if norm < 1e-10:
             term1_x = 0
@@ -56,27 +62,27 @@ class GradientDescentAckley:
 
         return np.array([term1_x + term2_x, term1_y + term2_y])
 
-    def optimize_ackley_2d(self, x0, y0):
-        point = np.array([x0, y0])
+    def optimize_ackley_2d(self, parameters):
+        point = np.array(parameters)
         history = [point.copy()]
-        values = [self.ackley_2d(point[0], point[1])]
+        values = [self.ackley_2d(point)]
 
         for _ in range(self.max_iter):
-            grad = self.gradient_ackley_2d(point[0], point[1])
+            grad = self.gradient_ackley_2d(point)
             new_point = point - self.step_size * grad
 
             history.append(new_point.copy())
-            values.append(float(self.ackley_2d(new_point[0], new_point[1])))
+            values.append(float(self.ackley_2d(new_point)))
 
             if np.linalg.norm(new_point - point) < self.tol:
                 break
 
             point = new_point
 
-        return point, self.ackley_2d(point[0], point[1]), history, values
+        return point, self.ackley_2d(point), history, values
 
-    def optimize_ackley_1d_sgd_and_mom(self, x0: float):
-        x = x0
+    def optimize_ackley_1d_sgd_and_mom(self, parameters):
+        x = np.array(parameters)
         vx = 0.0
         history = [x]
         values = [self.ackley_1d(x)]
@@ -96,28 +102,28 @@ class GradientDescentAckley:
 
             x = new_x
 
-        return float(x), float(self.ackley_1d(x)), history, values
+        return float(x[0]), float(self.ackley_1d(x)), history, values
 
-    def optimize_ackley_2d_sgd_and_mom(self, x0, y0):
-        point = np.array([x0, y0])
+    def optimize_ackley_2d_sgd_and_mom(self, parameters):
+        point = np.array(parameters)
         velocity = np.zeros(2)
         history = [point.copy()]
-        values = [self.ackley_2d(point[0], point[1])]
+        values = [self.ackley_2d(point)]
 
         for _ in range(self.max_iter):
             noise = np.random.normal(0, 0.05, 2)
-            grad = self.gradient_ackley_2d(point[0], point[1]) + noise
+            grad = self.gradient_ackley_2d(point) + noise
             velocity[0] = self.momentum * velocity[0] - self.step_size * grad[0]
             velocity[1] = self.momentum * velocity[1] - self.step_size * grad[1]
             velocity = np.clip(velocity, -10, 10)
             new_point = point + velocity
 
             history.append(new_point.copy())
-            values.append(float(self.ackley_2d(new_point[0], new_point[1])))
+            values.append(float(self.ackley_2d(new_point)))
 
             if np.linalg.norm(new_point - point) < self.tol:
                 break
 
             point = new_point
 
-        return point, self.ackley_2d(point[0], point[1]), history, values
+        return point, self.ackley_2d(point), history, values
