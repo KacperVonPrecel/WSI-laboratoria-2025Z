@@ -113,8 +113,7 @@ class GradientDescentAckley:
         for _ in range(self.max_iter):
             noise = np.random.normal(0, 0.05, 2)
             grad = self.gradient_ackley_2d(point) + noise
-            velocity[0] = self.momentum * velocity[0] - self.step_size * grad[0]
-            velocity[1] = self.momentum * velocity[1] - self.step_size * grad[1]
+            velocity = self.momentum * velocity - self.step_size * grad
             velocity = np.clip(velocity, -10, 10)
             new_point = point + velocity
 
