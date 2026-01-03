@@ -33,12 +33,12 @@ class DataReader():
         self._val_df, self._test_df = train_test_split(temp_df, test_size=0.50, random_state=rand_seed, shuffle=True)
 
 
-def get_class_values(data_frame):
-    return data_frame["quality"].tolist()
+def get_class_values(data_frame: pd.DataFrame):
+    return data_frame[data_frame.columns[-1]].tolist()
 
 
-def get_labels_values(data_frame):
-    return data_frame.drop(columns=["quality"]).tolist()
+def get_labels_values(data_frame: pd.DataFrame):
+    return data_frame.drop(columns=data_frame.columns[-1]).tolist()
 
 
 if __name__ == "__main__":
