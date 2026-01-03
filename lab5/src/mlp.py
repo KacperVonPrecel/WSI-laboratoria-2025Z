@@ -62,7 +62,7 @@ class MLP:
     def __init__(self):
         self.layers = []
 
-    def add(self, layer):
+    def add(self, layer: DenseLayer):
         self.layers.append(layer)
 
     def forward(self, data):
@@ -71,5 +71,17 @@ class MLP:
             curr = layer.forward(curr)
         return curr
 
-    def train(self, batch_to_process, y_one_hot, epochs=1000):
-        pass
+    def train(self, batch_to_process, y_one, epochs=1000):
+        loss_fn = SoftmaxCrossEntropy()
+
+        for epoch in range(epochs):
+            output = self.forward(batch_to_process)
+
+            loss = loss_fn.forward(output, y_one)
+            grad = loss_fn.backward()
+
+            for layer in reversed(self.layers):
+                grad = layer.backward(grad)
+
+            if epoch % 100 == 0:
+                print(f"Epoch {epoch}, Loss: {loss:.4f}")
