@@ -71,17 +71,33 @@ class MLP:
             curr = layer.forward(curr)
         return curr
 
-    def train(self, batch_to_process, y_one, epochs=1000):
+    def train(self, training_data, y_data, epochs=1000, batch_size=32):
         loss_fn = SoftmaxCrossEntropy()
+        n_samples = training_data.shape[0]
 
         for epoch in range(epochs):
-            output = self.forward(batch_to_process)
+            indices = np.arange(n_samples)
+            np.random.shuffle(indices)
 
-            loss = loss_fn.forward(output, y_one)
-            grad = loss_fn.backward()
+            training_data_shuffled = training_data[indices]
+            y_data_shuffled = y_data[indices]
 
-            for layer in reversed(self.layers):
-                grad = layer.backward(grad)
+            epoch_loss = 0
+
+            for i in range(0, n_samples, batch_size):
+                data_batch = training_data_shuffled[i : i + batch_size]
+                y_batch = y_data_shuffled[i : i + batch_size]
+
+                output = self.forward(data_batch)
+
+                loss = loss_fn.forward(output, y_batch)
+                grad = loss_fn.backward()
+
+                for layer in reversed(self.layers):
+                    grad = layer.backward(grad)
+
+                epoch_loss += loss * data_batch.shape[0]
 
             if epoch % 100 == 0:
-                print(f"Epoch {epoch}, Loss: {loss:.4f}")
+                avg_loss = epoch_loss / n_samples
+                print(f"Epoch {epoch}, Average Loss: {avg_loss:.4f}")
