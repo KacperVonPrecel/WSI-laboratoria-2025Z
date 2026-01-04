@@ -1,4 +1,5 @@
 from activation_functions import ActivationFunctions, ReLU, Sigmoid
+from loss_functions import LossFunctions
 import numpy as np
 
 
@@ -40,24 +41,6 @@ class DenseLayer:
         return grad_input
 
 
-class SoftmaxCrossEntropy:
-    EPSILON = 1e-9
-
-    def forward(self, logits, y_true_one):
-        exps = np.exp(logits - np.max(logits, axis=1, keepdims=True))
-        probabilities = exps / np.sum(exps, axis=1, keepdims=True)
-        self.probs = probabilities
-        self.y_true = y_true_one
-
-        m = y_true_one.shape[0]
-        loss = -np.sum(y_true_one * np.log(probabilities + self.EPSILON)) / m
-        return loss
-
-    def backward(self):
-        m = self.y_true.shape[0]
-        return (self.probs - self.y_true) / m
-
-
 class MLP:
     def __init__(self):
         self.layers = []
@@ -71,8 +54,7 @@ class MLP:
             curr = layer.forward(curr)
         return curr
 
-    def train(self, training_data, y_data, labels_val=None, y_val=None, epochs=1000, batch_size=32):
-        loss_fn = SoftmaxCrossEntropy()
+    def train(self, training_data, y_data, loss_fn: LossFunctions, labels_val=None, y_val=None, epochs=1000, batch_size=32):
         n_samples = training_data.shape[0]
 
         for epoch in range(epochs):
@@ -103,14 +85,12 @@ class MLP:
                 log_msg = f"Epoch {epoch}, Average Train Loss: {avg_loss:.4f}"
 
                 if labels_val is not None and y_val is not None:
-                    val_loss, val_accuracy = self.evaluate(labels_val, y_val)
+                    val_loss, val_accuracy = self.evaluate(labels_val, y_val, loss_fn)
                     log_msg += f" | Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy * 100:.2f}%"
 
                 print(log_msg)
 
-    def evaluate(self, labels_data, y_data):
-        loss_fn = SoftmaxCrossEntropy()
-
+    def evaluate(self, labels_data, y_data, loss_fn: LossFunctions):
         output = self.forward(labels_data)
 
         loss = loss_fn.forward(output, y_data)

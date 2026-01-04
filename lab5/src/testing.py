@@ -1,6 +1,7 @@
 from mlp import MLP, DenseLayer
 from data_reader import DataReader
 from activation_functions import ReLU, Linear, Sigmoid
+from loss_functions import SoftmaxCrossEntropy
 import argparse
 
 
@@ -19,6 +20,7 @@ def main():
 
     relu = ReLU()
     linear = Linear()
+    loss_fn = SoftmaxCrossEntropy()
 
     # learnig rate in a layer is 0.01 by default
     mlp.add(DenseLayer(11, 32, activation_func=relu))
@@ -36,12 +38,12 @@ def main():
 
     print("Training with evaluation; Epochs = 10000:")
     print("=" * 120)
-    mlp.train(labels_data, class_data, labels_val, class_val, epochs=600)
+    mlp.train(labels_data, class_data, loss_fn, labels_val, class_val, epochs=600)
 
     print("=" * 120)
     print("Test set:")
     print("=" * 120)
-    test_loss, test_accuracy = mlp.evaluate(labels_test, class_test)
+    test_loss, test_accuracy = mlp.evaluate(labels_test, class_test, loss_fn)
     print(f"Test Loss: {test_loss:.4f}, Test accuracy: {test_accuracy * 100:.2f}%")
 
 
