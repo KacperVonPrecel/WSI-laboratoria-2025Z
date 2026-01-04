@@ -1,24 +1,22 @@
 from mlp import MLP, DenseLayer
-from data_reader import DataReader, get_class_values, get_labels_values
+from data_reader import DataReader
 from activation_functions import ReLU, Linear, Sigmoid
 import argparse
-import random
 
 
 def main():
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('filename')
-    # args = parser.parse_args()
-    # filename = args.filename
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filename')
+    args = parser.parse_args()
+    filename = args.filename
 
     reader = DataReader()
     mlp = MLP()
 
     seed = 37
 
-    reader.read_data("./wsi5-25Z_dataset.csv", seed)
+    reader.read_data(filename, seed)
 
-    train_df = reader.get_train_df()
     relu = ReLU()
     linear = Linear()
 
@@ -26,17 +24,25 @@ def main():
     mlp.add(DenseLayer(32, 16, activation_func=relu))
     mlp.add(DenseLayer(16, 6, activation_func=linear))
 
-    labels_data = get_labels_values(train_df)
-    class_data = get_class_values(train_df)
+    labels_data = reader.get_train_x()
+    class_data = reader.get_train_y()
 
-    print("Training set: \n")
+    labels_val = reader.get_val_x()
+    class_val = reader.get_val_y()
+
+    labels_test = reader.get_test_x()
+    class_test = reader.get_test_y()
+
+    print("Training with evaluation; Epochs = 10000:")
     print("=" * 120)
-    mlp.train(labels_data, class_data, epochs=10000)
+    mlp.train(labels_data, class_data, labels_val, class_val, epochs=600)
 
     print("=" * 120)
-    print("Validation set: \n")
+    print("Test set:")
     print("=" * 120)
-    mlp.train(labels_data, class_data, epochs=10000)
+    test_loss, test_accuracy = mlp.evaluate(labels_test, class_test)
+    print(f"Test Loss: {test_loss:.4f}, Test accuracy: {test_accuracy * 100:.2f}%")
+
 
 if __name__ == "__main__":
     main()

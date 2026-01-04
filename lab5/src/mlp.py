@@ -71,7 +71,7 @@ class MLP:
             curr = layer.forward(curr)
         return curr
 
-    def train(self, training_data, y_data, epochs=1000, batch_size=32):
+    def train(self, training_data, y_data, labels_val=None, y_val=None, epochs=1000, batch_size=32):
         loss_fn = SoftmaxCrossEntropy()
         n_samples = training_data.shape[0]
 
@@ -98,6 +98,26 @@ class MLP:
 
                 epoch_loss += loss * data_batch.shape[0]
 
-            if epoch % 100 == 0:
+            if epoch % 50 == 0:
                 avg_loss = epoch_loss / n_samples
-                print(f"Epoch {epoch}, Average Loss: {avg_loss:.4f}")
+                log_msg = f"Epoch {epoch}, Average Train Loss: {avg_loss:.4f}"
+
+                if labels_val is not None and y_val is not None:
+                    val_loss, val_accuracy = self.evaluate(labels_val, y_val)
+                    log_msg += f" | Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy * 100:.2f}%"
+
+                print(log_msg)
+
+    def evaluate(self, labels_data, y_data):
+        loss_fn = SoftmaxCrossEntropy()
+
+        output = self.forward(labels_data)
+
+        loss = loss_fn.forward(output, y_data)
+
+        predictions = np.argmax(output, axis=1)
+        true_labels = np.argmax(y_data, axis=1)
+
+        accuracy = np.mean(predictions == true_labels)
+
+        return loss, accuracy
