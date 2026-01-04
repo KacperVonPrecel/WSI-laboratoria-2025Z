@@ -20,6 +20,7 @@ def main():
     relu = ReLU()
     linear = Linear()
 
+    # learnig rate in a layer is 0.01 by default
     mlp.add(DenseLayer(11, 32, activation_func=relu))
     mlp.add(DenseLayer(32, 16, activation_func=relu))
     mlp.add(DenseLayer(16, 6, activation_func=linear))
