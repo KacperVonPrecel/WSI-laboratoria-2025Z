@@ -34,11 +34,11 @@ class DataReader():
 
 
 def get_class_values(data_frame: pd.DataFrame):
-    return data_frame[data_frame.columns[-1]].tolist()
+    return pd.get_dummies(data_frame.iloc[:, -1]).to_numpy().astype(float)
 
 
 def get_labels_values(data_frame: pd.DataFrame):
-    return data_frame.drop(columns=data_frame.columns[-1]).tolist()
+    return data_frame.iloc[:, :-1].to_numpy().astype(float)
 
 
 if __name__ == "__main__":
