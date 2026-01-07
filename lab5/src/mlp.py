@@ -56,7 +56,7 @@ class MLP:
 
                 epoch_loss += loss * data_batch.shape[0]
 
-            if epoch % 50 == 0:
+            if epoch % 25 == 0:
                 avg_loss = epoch_loss / n_samples
                 log_msg = f"Epoch {epoch}, Average Train Loss: {avg_loss:.4f}"
 
