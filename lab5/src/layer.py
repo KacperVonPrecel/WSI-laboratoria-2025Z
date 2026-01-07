@@ -17,7 +17,6 @@ class DenseLayer(Layer):
     def __init__(self, input_count, output_count, activation_func: ActivationFunctions, learning_rate=0.01):
         super().__init__()
         self.trainable = True
-        self.learining_rate = learning_rate
         self.weights = np.random.randn(input_count, output_count) * np.sqrt(2. / input_count)
         self.biases = np.zeros((1, output_count))
         self.activation_func = activation_func
