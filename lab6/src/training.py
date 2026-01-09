@@ -3,12 +3,13 @@ import gymnasium as gym
 import matplotlib.pyplot as plt
 from qlearning_agent import QLearningAgent, train_generic
 import numpy as np
-from action_wrapper import ResrtrictedActionWrapper, minigrid_state_processor
+from four_rooms_wrapper import FourRoomsWrapper, minigrid_state_processor
+import random
 
 
-def train(params, episodes):
-    raw_env = gym.make("MiniGrid-FourRooms-v0", max_episode_steps=100, goal_pos=(2, 2), agent_pos=(7, 7))
-    env = ResrtrictedActionWrapper(raw_env, actions_map=[0, 1, 2])
+def train(params, episodes, fixed_pos=True, fixed_agent=(6, 6), fixed_goal=(2, 2)):
+    raw_env = gym.make("MiniGrid-FourRooms-v0", max_episode_steps=100)
+    env = FourRoomsWrapper(raw_env, actions_map=[0, 1, 2], fixed_pos=fixed_pos, agent_start=fixed_agent, goal_pos=fixed_goal)
 
     agent = QLearningAgent(
         n_actions=env.action_space.n,
@@ -35,6 +36,8 @@ def main():
     ]
 
     plt.figure(figsize=(10, 6))
+
+    random.seed("1234")
 
     for exp in experiments:
         print(f"Trenowanie: {exp['label']}...")

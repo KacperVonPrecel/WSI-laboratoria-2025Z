@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import gymnasium as gym
+import minigrid
 
 
 class QLearningAgent():
@@ -38,6 +39,7 @@ def train_generic(env: gym.Env, agent, state_processor_func, episodes=500):
 
     for _ in range(episodes):
         obs, _ = env.reset()
+
         state = state_processor_func(obs, env)
         total_reward = 0
         terminated = False
