@@ -14,6 +14,7 @@ class Solver(ABC):
         """
         ...
 
+    @abstractmethod
     def predict(self, X):
         """
         A method that returns predicted class for each row of X
